@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sehat Antri</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    h1 { color: green; }
+    input, button { margin: 5px; padding: 8px; }
+  </style>
+</head>
+<body>
+
+<h1>Sehat Antri 🏥</h1>
+
+<h2>Booking Puskesmas</h2>
+<input type="text" id="name" placeholder="Nama">
+<input type="date" id="date">
+<button onclick="booking()">Booking</button>
+
+<h2>Upload Foto</h2>
+<input type="file" id="file">
+<input type="number" id="booking_id" placeholder="Booking ID">
+<button onclick="upload()">Upload</button>
+
+<script>
+const API = "http://52.63.125.12:3000";
+
+async function booking() {
+  const res = await fetch(API + "/booking", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      name: document.getElementById("name").value,
+      date: document.getElementById("date").value
+    })
+  });
+
+  alert("Booking berhasil!");
+}
+
+async function upload() {
+  const form = new FormData();
+  form.append("file", document.getElementById("file").files[0]);
+  form.append("booking_id", document.getElementById("booking_id").value);
+
+  const res = await fetch(API + "/upload", {
+    method: "POST",
+    body: form
+  });
+
+  alert("Upload berhasil!");
+}
+</script>
+
+</body>
+</html>
