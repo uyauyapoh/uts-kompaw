@@ -28,10 +28,13 @@ jobs:
             # 🔥 HAPUS FOLDER LAMA
             rm -rf UTS
 
-            # 🔥 CLONE ULANG DARI GITHUB
+            # 🔥 CLONE ULANG
             git clone https://github.com/uyauyapoh/uts-kompaw.git UTS
 
             cd UTS
+
+            # 🔥 BUAT .env DARI GITHUB SECRETS
+            echo "${{ secrets.ENV_FILE }}" > .env
 
             # stop & remove container lama
             docker ps -q | xargs -r docker stop
