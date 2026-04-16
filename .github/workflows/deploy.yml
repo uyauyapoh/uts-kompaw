@@ -22,9 +22,15 @@ jobs:
         username: ec2-user
         key: ${{ secrets.EC2_KEY }}
         script: |
-          cd /home/ec2-user/UTS
-          git pull origin main
-          docker stop sehat-antri || true
-          docker rm sehat-antri || true
-          docker build -t sehat-antri .
-          docker run -d -p 3000:3000 --env-file .env --name sehat-antri sehat-antri
+        cd /home/ec2-user/UTS
+        git pull origin main
+
+        # stop & remove semua container lama
+        docker ps -q | xargs -r docker stop
+        docker ps -aq | xargs -r docker rm
+
+        # build ulang
+        docker build -t sehat-antri .
+
+        # run baru
+        docker run -d -p 3000:3000 --env-file .env --name sehat-antri sehat-antri
