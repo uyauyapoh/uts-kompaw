@@ -9,15 +9,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 🔥 WAJIB (INI KUNCI UI)
+// 🔥 WAJIB (INI YANG BIKIN UI MUNCUL)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Routes API
+// Routes
 app.use('/booking', require('./routes/booking'));
 app.use('/upload', require('./routes/upload'));
 app.use('/user', require('./routes/user'));
 
-// ❌ HAPUS INI (biar index.html tampil)
+
 // app.get('/', (req, res) => {
 //   res.send('Sehat Antri API Running');
 // });
