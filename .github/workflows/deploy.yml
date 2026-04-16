@@ -24,14 +24,18 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             cd /home/ec2-user/UTS
+
+            # 🔥 paksa sync ulang
+            git fetch --all
+            git reset --hard origin/main
             git pull origin main
 
-            # stop & remove semua container lama
+            # stop & remove container lama
             docker ps -q | xargs -r docker stop
             docker ps -aq | xargs -r docker rm
 
-            # build ulang
-            docker build -t sehat-antri .
+            # build ulang tanpa cache
+            docker build --no-cache -t sehat-antri .
 
-            # run baru
+            # jalankan container baru
             docker run -d -p 3000:3000 --env-file .env --name sehat-antri sehat-antri
