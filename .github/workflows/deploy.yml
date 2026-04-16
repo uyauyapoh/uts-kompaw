@@ -1,19 +1,44 @@
-script: |
-  cd /home/ec2-user/UTS
+name: Deploy to EC2
 
-  # 🔥 HAPUS REPO LAMA
-  rm -rf .git
+on:
+  push:
+    branches:
+      - main
 
-  # 🔥 CLONE ULANG (PASTI FRESH)
-  git clone https://github.com/uyauyapoh/uts-kompaw.git temp
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
 
-  # pindahkan isi ke folder sekarang
-  cp -r temp/* .
-  rm -rf temp
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-  docker ps -q | xargs -r docker stop
-  docker ps -aq | xargs -r docker rm
+      - name: Debug Host
+        run: echo "${{ secrets.EC2_HOST }}"
 
-  docker build --no-cache -t sehat-antri .
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd /home/ec2-user
 
-  docker run -d -p 3000:3000 --env-file .env --name sehat-antri sehat-antri
+            # 🔥 HAPUS FOLDER LAMA
+            rm -rf UTS
+
+            # 🔥 CLONE ULANG DARI GITHUB
+            git clone https://github.com/uyauyapoh/uts-kompaw.git UTS
+
+            cd UTS
+
+            # stop & remove container lama
+            docker ps -q | xargs -r docker stop
+            docker ps -aq | xargs -r docker rm
+
+            # build ulang tanpa cache
+            docker build --no-cache -t sehat-antri .
+
+            # jalankan container baru
+            docker run -d -p 3000:3000 --env-file .env --name sehat-antri sehat-antri
